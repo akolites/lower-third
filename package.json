@@ -23,9 +23,9 @@
     "dashboardPanels": [
       {
         "name": "panel",
-        "title": "Panel",
+        "title": "Lower Third Panel",
         "width": 6,
-        "file": "panel.html",
+        "file": "index.html",
         "headerColor": "#525F78"
       }
     ],

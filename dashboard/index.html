@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Streaming Kit</title>
+    <script src="./kalender.js"></script>
+    <script src="content.default.js"></script>
+</head>
+
+<body>
+    <div>
+        Pick a date : <input type="date" id="dateIn" />
+    </div>
+    <hr class="dashed" />
+
+    <div id="displayList">
+        <div id="bc1">
+            <input type="text" class="h2" value="Bacaan Pertama" /> | <input type="text" class="h1" value="Kis" />
+        </div>
+        <div id="mzm">
+            <input type="text" class="h2" value="Mazmur" /> | <input type="text" class="h1" value="Mazmur" />
+        </div>
+        <div id="bc2">
+            <input type="text" class="h2" value="Bacaan Kedua" /> | <input type="text" class="h1" value="1 Kor" />
+        </div>
+        <div id="bcI">
+            <input type="text" class="h2" value="Bacaan Injil" /> | <input type="text" class="h1" value="" />
+        </div>
+    </div>
+
+    <template id="contentInputs_T">
+        <div class="input-group">
+            <button class="input-link">Link</button>
+            || <input type="text" class="h1" value="" /> | <input type="text" class="h2" value="Bacaan Injil" /> |
+        </div>
+    </template>
+
+    <script type="text/javascript">
+        ; (async () => {
+
+            const inputLink = function () {
+                const urlParam = new URLSearchParams({
+                    title: this.parentNode.querySelector('input.h1')?.value || "",
+                    subtitle: this.parentNode.querySelector('input.h2')?.value || "",
+                    etc: this.parentNode.querySelector('input.h3')?.value || "",
+                });
+                const url = new URL(`../graphics/index.html`, window.location.href);
+                url.search = urlParam.toString();
+                window.open(url);
+            };
+
+            // initialize display 
+            let displayList = lower3rdContents;
+
+            // make dictionary of keys for indexing
+            let lower3rdKeyIndex = Object.assign({}, ...lower3rdContents.map((a, index) => ({ [a.id]: index })));
+
+            // dateInput handler
+            // 
+            const dateInput = document.getElementById("dateIn");
+            dateInput.addEventListener('input', async (el) => {
+                // prefill with akolites/kalender-liturgi
+                const tempReadings = await getLitDay(new Date(el.target.value)).then(a => getReadings(a));
+                lower3rdContents[lower3rdKeyIndex['bacaanPertama']].content.h2 = tempReadings.bacaan1?.text || "";
+                lower3rdContents[lower3rdKeyIndex['bacaanKedua']].content.h2 = tempReadings.bacaan2?.text || "";
+                lower3rdContents[lower3rdKeyIndex['bacaanInjil']].content.h2 = tempReadings.injil?.text || "";
+                lower3rdContents[lower3rdKeyIndex['mazmurTanggapan']].content.h3 = tempReadings.mazmur?.text || ""; //use 3rd tier template, h2 for reff
+
+                // generate inputs using templates
+                const displayListElement = document.getElementById('displayList');
+                const contentInputs_T = document.querySelector('template#contentInputs_T');
+                displayListElement.innerHTML = ""; // clear
+                lower3rdContents.forEach(a => {
+                    const cloned = contentInputs_T.content.cloneNode(true);
+                    cloned.querySelector('div.input-group').id = a.id;
+                    cloned.querySelector('input.h2').value = a.content.h2;
+                    cloned.querySelector('input.h1').value = a.content.h1;
+                    // append mazmur 
+                    if (typeof a.content.h3 !== 'undefined') {
+                        const h3InputElement = document.createElement('input');
+                        h3InputElement.value = a.content.h3;
+                        h3InputElement.class = "h3";
+                        cloned.querySelector('input.h2').after(" | ", h3InputElement);
+                    }
+
+                    // link generator 
+                    cloned.querySelector('button.input-link').onclick = inputLink;
+
+                    displayListElement.appendChild(cloned);
+                })
+            });
+
+            // ready
+            [document.getElementById('dateIn').value] = new Date().toISOString().split('T');
+            dateInput.dispatchEvent(new Event('input'));
+
+            //-- dateInput handler
+
+
+
+        })();
+    </script>
+</body>
+
+</html>
