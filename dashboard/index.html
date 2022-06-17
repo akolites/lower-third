@@ -15,40 +15,19 @@
     <hr class="dashed" />
 
     <div id="displayList">
-        <div id="bc1">
-            <input type="text" class="h2" value="Bacaan Pertama" /> | <input type="text" class="h1" value="Kis" />
-        </div>
-        <div id="mzm">
-            <input type="text" class="h2" value="Mazmur" /> | <input type="text" class="h1" value="Mazmur" />
-        </div>
-        <div id="bc2">
-            <input type="text" class="h2" value="Bacaan Kedua" /> | <input type="text" class="h1" value="1 Kor" />
-        </div>
-        <div id="bcI">
-            <input type="text" class="h2" value="Bacaan Injil" /> | <input type="text" class="h1" value="" />
-        </div>
+
     </div>
 
     <template id="contentInputs_T">
         <div class="input-group">
-            <button class="input-link">Link</button>
+            <button class="graphics-toggle" type="checkbox"></button>
+            <button class="graphics-link">Link</button>
             || <input type="text" class="h1" value="" /> | <input type="text" class="h2" value="Bacaan Injil" /> |
         </div>
     </template>
 
     <script type="text/javascript">
         ; (async () => {
-
-            const inputLink = function () {
-                const urlParam = new URLSearchParams({
-                    title: this.parentNode.querySelector('input.h1')?.value || "",
-                    subtitle: this.parentNode.querySelector('input.h2')?.value || "",
-                    etc: this.parentNode.querySelector('input.h3')?.value || "",
-                });
-                const url = new URL(`../graphics/index.html`, window.location.href);
-                url.search = urlParam.toString();
-                window.open(url);
-            };
 
             // initialize display 
             let displayList = lower3rdContents;
@@ -85,7 +64,35 @@
                     }
 
                     // link generator 
-                    cloned.querySelector('button.input-link').onclick = inputLink;
+                    cloned.querySelector('button.graphics-link').addEventListener('click', (element) => {
+                        const urlParam = new URLSearchParams({
+                            title: element.target.parentNode.querySelector('input.h1')?.value || "",
+                            subtitle: element.target.parentNode.querySelector('input.h2')?.value || "",
+                            etc: element.target.parentNode.querySelector('input.h3')?.value || "",
+                        });
+                        const url = new URL(`../graphics/index.html`, window.location.href);
+                        url.search = urlParam.toString();
+                        window.open(url);
+                    });
+
+                    // trigger change
+                    if (typeof nodecg !== 'undefined') {
+                        cloned.querySelector('button.graphics-toggle').addEventListener('click', async (element) => {
+                            const payload = {
+                                title: element.target.parentNode.querySelector('input.h1')?.value || "",
+                                subtitle: element.target.parentNode.querySelector('input.h2')?.value || "",
+                                etc: element.target.parentNode.querySelector('input.h3')?.value || "",
+                            };
+
+                            try {
+                                const response = await nodecg.sendMessage('changeContent', payload);
+                                return;
+                            } catch (error) {
+                                console.error(error);
+                            }
+                        });
+                    }
+
 
                     displayListElement.appendChild(cloned);
                 })

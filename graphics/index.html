@@ -18,13 +18,13 @@
 			document.getElementById('subtitle').textContent = content.subtitle;
 		}
 
-		/** #TODO for nodecg
+		// /** #TODO for nodecg
 		if (typeof nodecg !== 'undefined') {
 			nodecg.listenFor('changeContent', (content) => {
 				updateContent(content);
 			})
 		}
-		*/
+		// */
 
 		const urlParams = new URLSearchParams(window.location.search);
 		updateContent({
