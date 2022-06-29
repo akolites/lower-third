@@ -6,7 +6,7 @@
  */
 async function getLitDay(date) {
     const monthYear = `${date.getFullYear()}-${`0${date.getMonth() + 1}`.slice(-2)}`; //yyyy-MM
-    const litDay = await fetch(`https://raw.githubusercontent.com/akolites/kalender-liturgi/main/api/v1/${monthYear}.json`)
+    const litDay = await fetch(`https://akolites.github.io/kalender/api/v1/${monthYear}.json`)
         .then(res => res.json()
         ).then(k => k[date.getDate() - 1]);
     return litDay;
